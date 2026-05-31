@@ -4,42 +4,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MFA Bypass Research Lab</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; line-height: 1.7; }
-    header { background: #161b22; border-bottom: 1px solid #30363d; padding: 40px 20px; text-align: center; }
-    header h1 { font-size: 2rem; color: #58a6ff; margin-bottom: 10px; }
-    header p { font-size: 1rem; color: #8b949e; max-width: 600px; margin: 0 auto; }
-    .badge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+
+    header { background: linear-gradient(135deg, #161b22 0%, #0d1117 100%); border-bottom: 1px solid #30363d; padding: 60px 20px 40px; text-align: center; }
+    header h1 { font-size: 2.2rem; color: #58a6ff; margin-bottom: 10px; }
+    header p { font-size: 1rem; color: #8b949e; max-width: 640px; margin: 0 auto 20px; }
+    .badge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
     .badge { background: #21262d; border: 1px solid #30363d; border-radius: 20px; padding: 4px 14px; font-size: 12px; color: #58a6ff; }
-    main { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-    .warning { background: #2d1b00; border: 1px solid #d29922; border-radius: 8px; padding: 14px 18px; margin-bottom: 32px; font-size: 14px; color: #d29922; }
-    h2 { font-size: 1.3rem; color: #e6edf3; margin: 36px 0 16px; border-bottom: 1px solid #21262d; padding-bottom: 8px; }
-    .module-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 32px; }
-    .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; }
-    .card h3 { font-size: 1rem; color: #e6edf3; margin-bottom: 8px; }
-    .card p { font-size: 13px; color: #8b949e; margin-bottom: 12px; }
-    .severity { display: inline-block; font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 600; margin-bottom: 8px; }
+    .btn { display: inline-block; padding: 10px 22px; border-radius: 6px; text-decoration: none; font-size: 14px; margin: 4px; font-weight: 500; }
+    .btn-green { background: #238636; color: #fff; border: 1px solid #2ea043; }
+    .btn-blue { background: transparent; color: #58a6ff; border: 1px solid #58a6ff; }
+    .btn:hover { opacity: 0.85; }
+
+    nav { background: #161b22; border-bottom: 1px solid #30363d; padding: 0 20px; display: flex; justify-content: center; gap: 0; position: sticky; top: 0; z-index: 100; }
+    nav a { color: #8b949e; text-decoration: none; padding: 14px 20px; font-size: 14px; border-bottom: 2px solid transparent; display: block; }
+    nav a:hover { color: #e6edf3; border-bottom-color: #58a6ff; }
+
+    main { max-width: 980px; margin: 0 auto; padding: 40px 20px; }
+    section { margin-bottom: 60px; }
+    h2 { font-size: 1.4rem; color: #e6edf3; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #21262d; display: flex; align-items: center; gap: 10px; }
+    h2 i { color: #58a6ff; }
+
+    .warning { background: #2d1b00; border: 1px solid #d29922; border-radius: 8px; padding: 14px 18px; margin-bottom: 40px; font-size: 14px; color: #d29922; display: flex; gap: 10px; align-items: flex-start; }
+
+    .module { background: #161b22; border: 1px solid #30363d; border-radius: 12px; margin-bottom: 28px; overflow: hidden; }
+    .module-top { padding: 24px 24px 16px; }
+    .module-title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+    .module h3 { font-size: 1.05rem; color: #e6edf3; }
+    .severity { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
     .critical { background: #3d0000; color: #f85149; border: 1px solid #f85149; }
-    .high     { background: #2d1b00; color: #d29922; border: 1px solid #d29922; }
+    .high { background: #2d1b00; color: #d29922; border: 1px solid #d29922; }
+    .module p { font-size: 13px; color: #8b949e; margin-bottom: 12px; }
     .tag { display: inline-block; background: #21262d; color: #58a6ff; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin: 2px; }
-    .mitigation { background: #0d2616; border: 1px solid #238636; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #3fb950; margin-top: 10px; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 32px; }
-    th { background: #161b22; color: #8b949e; padding: 10px 14px; text-align: left; border-bottom: 1px solid #30363d; font-weight: 500; }
-    td { padding: 10px 14px; border-bottom: 1px solid #21262d; color: #c9d1d9; }
+
+    .demo-section { background: #0d1117; border-top: 1px solid #30363d; padding: 20px 24px; }
+    .demo-label { font-size: 12px; color: #8b949e; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .demo-label i { color: #58a6ff; }
+    .player-wrap { border-radius: 8px; overflow: hidden; border: 1px solid #30363d; }
+    .player-wrap iframe { width: 100%; height: 400px; border: none; display: block; background: #000; }
+
+    .mitigation { background: #0d2616; border: 1px solid #238636; border-radius: 6px; padding: 12px 16px; font-size: 13px; color: #3fb950; margin: 16px 24px 20px; display: flex; gap: 10px; align-items: flex-start; }
+    .mitigation i { margin-top: 2px; flex-shrink: 0; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { background: #161b22; color: #8b949e; padding: 12px 16px; text-align: left; border-bottom: 1px solid #30363d; font-weight: 500; }
+    td { padding: 12px 16px; border-bottom: 1px solid #21262d; }
+    tr:last-child td { border-bottom: none; }
     tr:hover td { background: #161b22; }
-    .skills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
-    .skill-tag { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 6px 14px; font-size: 13px; color: #c9d1d9; }
-    .btn { display: inline-block; background: #238636; color: #fff; padding: 10px 22px; border-radius: 6px; text-decoration: none; font-size: 14px; margin-right: 10px; margin-top: 8px; border: 1px solid #2ea043; }
-    .btn-outline { background: transparent; color: #58a6ff; border: 1px solid #58a6ff; }
-    footer { text-align: center; padding: 32px 20px; color: #484f58; font-size: 13px; border-top: 1px solid #21262d; margin-top: 60px; }
+    .table-wrap { background: #161b22; border: 1px solid #30363d; border-radius: 10px; overflow: hidden; }
+
+    .steps { list-style: none; counter-reset: step; }
+    .steps li { counter-increment: step; padding: 14px 14px 14px 54px; position: relative; border-bottom: 1px solid #21262d; font-size: 14px; }
+    .steps li:last-child { border-bottom: none; }
+    .steps li::before { content: counter(step); position: absolute; left: 14px; top: 14px; background: #1f6feb; color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+    .steps-wrap { background: #161b22; border: 1px solid #30363d; border-radius: 10px; overflow: hidden; }
+
+    .skills { display: flex; flex-wrap: wrap; gap: 10px; }
+    .skill-tag { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 8px 16px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .skill-tag i { color: #58a6ff; font-size: 12px; }
+
+    .refs { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+    .ref-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 14px 16px; text-decoration: none; color: #c9d1d9; font-size: 13px; display: flex; align-items: center; gap: 10px; }
+    .ref-card:hover { border-color: #58a6ff; color: #58a6ff; }
+    .ref-card i { color: #58a6ff; flex-shrink: 0; }
+
+    footer { text-align: center; padding: 32px 20px; color: #484f58; font-size: 13px; border-top: 1px solid #21262d; }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>MFA Bypass Research Lab</h1>
-  <p>A controlled, ethical cybersecurity research project demonstrating three classes of MFA weakness and the technical controls that defeat each one.</p>
+  <h1><i class="fa-solid fa-shield-halved" style="color:#58a6ff;margin-right:10px"></i>MFA Bypass Research Lab</h1>
+  <p>A controlled, ethical cybersecurity research project demonstrating three classes of MFA weakness and the technical controls that defeat each one — built for IAM security portfolio.</p>
   <div class="badge-row">
     <span class="badge">NIST SP 800-63B</span>
     <span class="badge">MITRE ATT&CK</span>
@@ -47,84 +86,178 @@
     <span class="badge">Docker</span>
     <span class="badge">Python</span>
     <span class="badge">FIDO2</span>
+    <span class="badge">Keycloak</span>
+    <span class="badge">Kali Linux</span>
   </div>
+  <a class="btn btn-green" href="https://github.com/aryankaushik23-sys/mfa-bypass-lab" target="_blank"><i class="fa-brands fa-github"></i> View on GitHub</a>
+  <a class="btn btn-blue" href="report/findings-summary.md" target="_blank"><i class="fa-solid fa-file-lines"></i> Findings Report</a>
 </header>
+
+<nav>
+  <a href="#demos"><i class="fa-solid fa-play"></i> Live Demos</a>
+  <a href="#findings"><i class="fa-solid fa-table"></i> Findings</a>
+  <a href="#how"><i class="fa-solid fa-gear"></i> How It Works</a>
+  <a href="#skills"><i class="fa-solid fa-code"></i> Skills</a>
+</nav>
 
 <main>
 
   <div class="warning">
-    Ethics & scope — This lab runs entirely on a local virtual machine. No external systems, real user accounts, or production services were targeted at any point. For defensive security education only.
+    <i class="fa-solid fa-triangle-exclamation" style="margin-top:2px;flex-shrink:0"></i>
+    <span><strong>Ethics and scope</strong> — This lab runs entirely on a local virtual machine. No external systems, real user accounts, or production services were targeted at any point. All attack simulations performed against services deployed and controlled by the researcher. For defensive security education only.</span>
   </div>
 
-  <h2>Attack modules</h2>
-  <div class="module-grid">
+  <!-- DEMOS -->
+  <section id="demos">
+    <h2><i class="fa-solid fa-play"></i> Live Attack Demonstrations</h2>
 
-    <div class="card">
-      <span class="severity critical">Critical — CVSS 9.0</span>
-      <h3>Module 1 — OTP interception via AiTM</h3>
-      <p>Evilginx3 reverse proxy intercepts live TOTP codes and session cookies between the victim browser and Keycloak IdP.</p>
-      <div><span class="tag">T1111</span> <span class="tag">Evilginx3</span> <span class="tag">Keycloak</span> <span class="tag">Wireshark</span></div>
-      <div class="mitigation">Mitigation: FIDO2 / WebAuthn — origin binding defeats proxying</div>
+    <div class="module">
+      <div class="module-top">
+        <div class="module-title-row">
+          <span class="severity critical">Critical — CVSS 9.0</span>
+          <h3>Module 1 — OTP Interception via AiTM Phishing</h3>
+        </div>
+        <p>Evilginx3 reverse proxy sits between the victim browser and Keycloak IdP. Live TOTP codes and session cookies are intercepted and replayed — proving authenticated access without ever knowing the OTP directly.</p>
+        <div><span class="tag">T1111</span> <span class="tag">Evilginx3</span> <span class="tag">Keycloak</span> <span class="tag">Wireshark</span> <span class="tag">TOTP</span></div>
+      </div>
+      <div class="demo-section">
+        <div class="demo-label"><i class="fa-solid fa-terminal"></i> Terminal demo — AiTM session capture (recording coming soon)</div>
+        <div class="player-wrap" style="background:#000;padding:30px;text-align:center;color:#484f58;font-size:13px;border-radius:8px;">
+          Demo recording will be added after Evilginx3 setup is complete.
+        </div>
+      </div>
+      <div class="mitigation"><i class="fa-solid fa-shield-check"></i> <span><strong>Mitigation:</strong> FIDO2/WebAuthn enabled as required authenticator in Keycloak. Credential is cryptographically bound to the legitimate origin — a proxy at any other domain cannot satisfy the WebAuthn ceremony. This attack class is eliminated entirely.</span></div>
     </div>
 
-    <div class="card">
-      <span class="severity high">High — CVSS 7.5</span>
-      <h3>Module 2 — MFA fatigue (push bombing)</h3>
-      <p>Python script floods a test Authentik account with 20 push authentication requests, simulating approval under fatigue conditions.</p>
-      <div><span class="tag">T1621</span> <span class="tag">Authentik</span> <span class="tag">Python</span> <span class="tag">Burp Suite</span></div>
-      <div class="mitigation">Mitigation: Number matching + rate limiting (max 5/10 min)</div>
+    <div class="module">
+      <div class="module-top">
+        <div class="module-title-row">
+          <span class="severity high">High — CVSS 7.5</span>
+          <h3>Module 2 — MFA Fatigue via Push Notification Bombing</h3>
+        </div>
+        <p>Python script sends 20 successive push authentication requests to a test Authentik account using valid credentials. No MFA bypass, no malware — a single fatigued approval grants full authenticated access. Real-world example: Uber breach 2022.</p>
+        <div><span class="tag">T1621</span> <span class="tag">Authentik</span> <span class="tag">Python</span> <span class="tag">Burp Suite</span> <span class="tag">Push MFA</span></div>
+      </div>
+      <div class="demo-section">
+        <div class="demo-label"><i class="fa-solid fa-terminal"></i> Terminal demo — push flood script running live</div>
+        <div class="player-wrap">
+          <iframe src="https://asciinema.org/a/0cSEWfXzlzVE8NEh/iframe?autoplay=0&theme=monokai" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="mitigation"><i class="fa-solid fa-shield-check"></i> <span><strong>Mitigation:</strong> Number matching enforced — user must type a displayed code, preventing blind approval. Rate limiting configured at 5 attempts per account per 10-minute window. Push context enriched with app name, source IP, and location.</span></div>
     </div>
 
-    <div class="card">
-      <span class="severity high">High — CVSS 7.1</span>
-      <h3>Module 3 — SMS OTP via SIM-swap</h3>
-      <p>Local Asterisk PBX and softphone clients simulate number hijacking, redirecting OTP delivery to an attacker-controlled number.</p>
-      <div><span class="tag">T1111</span> <span class="tag">Asterisk</span> <span class="tag">pyotp</span> <span class="tag">VoIP</span></div>
-      <div class="mitigation">Mitigation: Remove SMS MFA per NIST SP 800-63B §5.2.10</div>
+    <div class="module">
+      <div class="module-top">
+        <div class="module-title-row">
+          <span class="severity high">High — CVSS 7.1</span>
+          <h3>Module 3 — SMS OTP Interception via SIM-Swap</h3>
+        </div>
+        <p>Local Asterisk PBX and two softphone clients simulate number hijacking. The SMS OTP is redirected to the attacker-controlled number — authentication succeeds with zero device access, zero malware, and no password knowledge beyond the username.</p>
+        <div><span class="tag">T1111</span> <span class="tag">Asterisk</span> <span class="tag">pyotp</span> <span class="tag">VoIP</span> <span class="tag">SS7</span></div>
+      </div>
+      <div class="demo-section">
+        <div class="demo-label"><i class="fa-solid fa-terminal"></i> Terminal demo — SIM-swap OTP redirect live</div>
+        <div class="player-wrap">
+          <iframe src="https://asciinema.org/a/DqNwLnVwguS7lX1Z/iframe?autoplay=0&theme=monokai" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="mitigation"><i class="fa-solid fa-shield-check"></i> <span><strong>Mitigation:</strong> SMS MFA removed from all Keycloak authentication flows per NIST SP 800-63B §5.2.10. All users migrated to TOTP (RFC 6238) minimum, FIDO2 recommended. SS7 protocol has no authentication — the only fix is to stop using SMS.</span></div>
     </div>
 
-  </div>
+  </section>
 
-  <h2>Findings summary</h2>
-  <table>
-    <tr>
-      <th>#</th><th>Finding</th><th>Severity</th><th>ATT&CK</th><th>Mitigation</th>
-    </tr>
-    <tr>
-      <td>1</td><td>OTP interception via AiTM proxy</td><td style="color:#f85149">Critical 9.0</td><td>T1111</td><td>FIDO2 / WebAuthn</td>
-    </tr>
-    <tr>
-      <td>2</td><td>MFA fatigue via push flooding</td><td style="color:#d29922">High 7.5</td><td>T1621</td><td>Number matching + rate limit</td>
-    </tr>
-    <tr>
-      <td>3</td><td>SMS OTP hijacking via SIM-swap</td><td style="color:#d29922">High 7.1</td><td>T1111</td><td>Remove SMS, deploy TOTP/FIDO2</td>
-    </tr>
-  </table>
+  <!-- FINDINGS -->
+  <section id="findings">
+    <h2><i class="fa-solid fa-table"></i> Findings Summary</h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>#</th><th>Finding</th><th>Severity</th><th>CVSS</th><th>ATT&CK</th><th>Mitigation</th></tr>
+        <tr>
+          <td>1</td>
+          <td>OTP interception via AiTM proxy</td>
+          <td style="color:#f85149;font-weight:600">Critical</td>
+          <td>9.0</td>
+          <td><a href="https://attack.mitre.org/techniques/T1111/" target="_blank" style="color:#58a6ff">T1111</a></td>
+          <td>FIDO2 / WebAuthn</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>MFA fatigue via push flooding</td>
+          <td style="color:#d29922;font-weight:600">High</td>
+          <td>7.5</td>
+          <td><a href="https://attack.mitre.org/techniques/T1621/" target="_blank" style="color:#58a6ff">T1621</a></td>
+          <td>Number matching + rate limit</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>SMS OTP hijacking via SIM-swap</td>
+          <td style="color:#d29922;font-weight:600">High</td>
+          <td>7.1</td>
+          <td><a href="https://attack.mitre.org/techniques/T1111/" target="_blank" style="color:#58a6ff">T1111</a></td>
+          <td>Remove SMS, deploy TOTP/FIDO2</td>
+        </tr>
+      </table>
+    </div>
+  </section>
 
-  <h2>Skills demonstrated</h2>
-  <div class="skills">
-    <span class="skill-tag">Adversary-in-the-middle simulation</span>
-    <span class="skill-tag">MFA protocol analysis</span>
-    <span class="skill-tag">Keycloak / Authentik configuration</span>
-    <span class="skill-tag">FIDO2 / WebAuthn deployment</span>
-    <span class="skill-tag">Python security scripting</span>
-    <span class="skill-tag">Docker lab environments</span>
-    <span class="skill-tag">Pentest report writing</span>
-    <span class="skill-tag">CVSS scoring</span>
-    <span class="skill-tag">NIST SP 800-63B</span>
-    <span class="skill-tag">MITRE ATT&CK mapping</span>
-    <span class="skill-tag">Wireshark traffic analysis</span>
-    <span class="skill-tag">VoIP / SIP configuration</span>
-  </div>
+  <!-- HOW IT WORKS -->
+  <section id="how">
+    <h2><i class="fa-solid fa-gear"></i> How The Lab Works</h2>
+    <div class="steps-wrap">
+      <ol class="steps">
+        <li>Keycloak identity provider deployed in Docker on Kali Linux — acts as the victim login system accessible at localhost:8080</li>
+        <li>Authentik deployed in a separate Docker stack for push MFA testing — accessible at localhost:9000</li>
+        <li>Attacker tools (Evilginx3, Python scripts) run on the same isolated Kali machine — no external network exposure</li>
+        <li>Each attack demonstrated against real running services — not simulated or mocked output</li>
+        <li>Evidence captured: Wireshark packet captures, JSON attack logs, terminal session recordings</li>
+        <li>Mitigations implemented directly in Keycloak and Authentik admin configuration</li>
+        <li>All findings documented in pentest report format with CVSS v3 scores and MITRE ATT&CK mapping</li>
+      </ol>
+    </div>
+  </section>
 
-  <h2>View the project</h2>
-  <a class="btn" href="https://github.com/aryankaushik23-sys/mfa-bypass-lab" target="_blank">View on GitHub</a>
-  <a class="btn btn-outline" href="report/findings-summary.md" target="_blank">Read findings report</a>
+  <!-- SKILLS -->
+  <section id="skills">
+    <h2><i class="fa-solid fa-code"></i> Skills Demonstrated</h2>
+    <div class="skills">
+      <span class="skill-tag"><i class="fa-solid fa-user-secret"></i> Adversary-in-the-middle simulation</span>
+      <span class="skill-tag"><i class="fa-solid fa-lock"></i> MFA protocol analysis</span>
+      <span class="skill-tag"><i class="fa-solid fa-key"></i> Keycloak / Authentik configuration</span>
+      <span class="skill-tag"><i class="fa-solid fa-fingerprint"></i> FIDO2 / WebAuthn deployment</span>
+      <span class="skill-tag"><i class="fa-brands fa-python"></i> Python security scripting</span>
+      <span class="skill-tag"><i class="fa-brands fa-docker"></i> Docker lab environments</span>
+      <span class="skill-tag"><i class="fa-solid fa-file-lines"></i> Pentest report writing</span>
+      <span class="skill-tag"><i class="fa-solid fa-chart-bar"></i> CVSS v3 scoring</span>
+      <span class="skill-tag"><i class="fa-solid fa-book"></i> NIST SP 800-63B</span>
+      <span class="skill-tag"><i class="fa-solid fa-crosshairs"></i> MITRE ATT&CK mapping</span>
+      <span class="skill-tag"><i class="fa-solid fa-wifi"></i> Wireshark traffic analysis</span>
+      <span class="skill-tag"><i class="fa-solid fa-phone"></i> VoIP / SIP configuration</span>
+      <span class="skill-tag"><i class="fa-brands fa-git-alt"></i> Git version control</span>
+      <span class="skill-tag"><i class="fa-solid fa-terminal"></i> Kali Linux</span>
+    </div>
+  </section>
+
+  <!-- REFERENCES -->
+  <section id="refs">
+    <h2><i class="fa-solid fa-link"></i> References</h2>
+    <div class="refs">
+      <a class="ref-card" href="https://pages.nist.gov/800-63-3/sp800-63b.html" target="_blank"><i class="fa-solid fa-file-shield"></i> NIST SP 800-63B</a>
+      <a class="ref-card" href="https://attack.mitre.org/techniques/T1111/" target="_blank"><i class="fa-solid fa-crosshairs"></i> MITRE ATT&CK T1111</a>
+      <a class="ref-card" href="https://attack.mitre.org/techniques/T1621/" target="_blank"><i class="fa-solid fa-crosshairs"></i> MITRE ATT&CK T1621</a>
+      <a class="ref-card" href="https://fidoalliance.org/fido2/" target="_blank"><i class="fa-solid fa-fingerprint"></i> FIDO2 / WebAuthn</a>
+      <a class="ref-card" href="https://github.com/kgretzky/evilginx2" target="_blank"><i class="fa-brands fa-github"></i> Evilginx3</a>
+      <a class="ref-card" href="https://www.keycloak.org/documentation" target="_blank"><i class="fa-solid fa-key"></i> Keycloak Docs</a>
+      <a class="ref-card" href="https://goauthentik.io/docs/" target="_blank"><i class="fa-solid fa-lock"></i> Authentik Docs</a>
+      <a class="ref-card" href="https://github.com/aryankaushik23-sys/mfa-bypass-lab" target="_blank"><i class="fa-brands fa-github"></i> This Project on GitHub</a>
+    </div>
+  </section>
 
 </main>
 
 <footer>
-  MFA Bypass Research Lab — built for cybersecurity portfolio and CV purposes. All testing performed in a controlled local environment.
+  MFA Bypass Research Lab — built for cybersecurity portfolio and CV purposes.<br>
+  All testing performed in a controlled local environment on Kali Linux.
 </footer>
 
 </body>
