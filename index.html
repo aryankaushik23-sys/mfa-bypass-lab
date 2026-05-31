@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MFA Bypass Research Lab</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; line-height: 1.7; }
+    header { background: #161b22; border-bottom: 1px solid #30363d; padding: 40px 20px; text-align: center; }
+    header h1 { font-size: 2rem; color: #58a6ff; margin-bottom: 10px; }
+    header p { font-size: 1rem; color: #8b949e; max-width: 600px; margin: 0 auto; }
+    .badge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+    .badge { background: #21262d; border: 1px solid #30363d; border-radius: 20px; padding: 4px 14px; font-size: 12px; color: #58a6ff; }
+    main { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    .warning { background: #2d1b00; border: 1px solid #d29922; border-radius: 8px; padding: 14px 18px; margin-bottom: 32px; font-size: 14px; color: #d29922; }
+    h2 { font-size: 1.3rem; color: #e6edf3; margin: 36px 0 16px; border-bottom: 1px solid #21262d; padding-bottom: 8px; }
+    .module-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; }
+    .card h3 { font-size: 1rem; color: #e6edf3; margin-bottom: 8px; }
+    .card p { font-size: 13px; color: #8b949e; margin-bottom: 12px; }
+    .severity { display: inline-block; font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 600; margin-bottom: 8px; }
+    .critical { background: #3d0000; color: #f85149; border: 1px solid #f85149; }
+    .high     { background: #2d1b00; color: #d29922; border: 1px solid #d29922; }
+    .tag { display: inline-block; background: #21262d; color: #58a6ff; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin: 2px; }
+    .mitigation { background: #0d2616; border: 1px solid #238636; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #3fb950; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 32px; }
+    th { background: #161b22; color: #8b949e; padding: 10px 14px; text-align: left; border-bottom: 1px solid #30363d; font-weight: 500; }
+    td { padding: 10px 14px; border-bottom: 1px solid #21262d; color: #c9d1d9; }
+    tr:hover td { background: #161b22; }
+    .skills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+    .skill-tag { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 6px 14px; font-size: 13px; color: #c9d1d9; }
+    .btn { display: inline-block; background: #238636; color: #fff; padding: 10px 22px; border-radius: 6px; text-decoration: none; font-size: 14px; margin-right: 10px; margin-top: 8px; border: 1px solid #2ea043; }
+    .btn-outline { background: transparent; color: #58a6ff; border: 1px solid #58a6ff; }
+    footer { text-align: center; padding: 32px 20px; color: #484f58; font-size: 13px; border-top: 1px solid #21262d; margin-top: 60px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>MFA Bypass Research Lab</h1>
+  <p>A controlled, ethical cybersecurity research project demonstrating three classes of MFA weakness and the technical controls that defeat each one.</p>
+  <div class="badge-row">
+    <span class="badge">NIST SP 800-63B</span>
+    <span class="badge">MITRE ATT&CK</span>
+    <span class="badge">IAM Security</span>
+    <span class="badge">Docker</span>
+    <span class="badge">Python</span>
+    <span class="badge">FIDO2</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="warning">
+    Ethics & scope — This lab runs entirely on a local virtual machine. No external systems, real user accounts, or production services were targeted at any point. For defensive security education only.
+  </div>
+
+  <h2>Attack modules</h2>
+  <div class="module-grid">
+
+    <div class="card">
+      <span class="severity critical">Critical — CVSS 9.0</span>
+      <h3>Module 1 — OTP interception via AiTM</h3>
+      <p>Evilginx3 reverse proxy intercepts live TOTP codes and session cookies between the victim browser and Keycloak IdP.</p>
+      <div><span class="tag">T1111</span> <span class="tag">Evilginx3</span> <span class="tag">Keycloak</span> <span class="tag">Wireshark</span></div>
+      <div class="mitigation">Mitigation: FIDO2 / WebAuthn — origin binding defeats proxying</div>
+    </div>
+
+    <div class="card">
+      <span class="severity high">High — CVSS 7.5</span>
+      <h3>Module 2 — MFA fatigue (push bombing)</h3>
+      <p>Python script floods a test Authentik account with 20 push authentication requests, simulating approval under fatigue conditions.</p>
+      <div><span class="tag">T1621</span> <span class="tag">Authentik</span> <span class="tag">Python</span> <span class="tag">Burp Suite</span></div>
+      <div class="mitigation">Mitigation: Number matching + rate limiting (max 5/10 min)</div>
+    </div>
+
+    <div class="card">
+      <span class="severity high">High — CVSS 7.1</span>
+      <h3>Module 3 — SMS OTP via SIM-swap</h3>
+      <p>Local Asterisk PBX and softphone clients simulate number hijacking, redirecting OTP delivery to an attacker-controlled number.</p>
+      <div><span class="tag">T1111</span> <span class="tag">Asterisk</span> <span class="tag">pyotp</span> <span class="tag">VoIP</span></div>
+      <div class="mitigation">Mitigation: Remove SMS MFA per NIST SP 800-63B §5.2.10</div>
+    </div>
+
+  </div>
+
+  <h2>Findings summary</h2>
+  <table>
+    <tr>
+      <th>#</th><th>Finding</th><th>Severity</th><th>ATT&CK</th><th>Mitigation</th>
+    </tr>
+    <tr>
+      <td>1</td><td>OTP interception via AiTM proxy</td><td style="color:#f85149">Critical 9.0</td><td>T1111</td><td>FIDO2 / WebAuthn</td>
+    </tr>
+    <tr>
+      <td>2</td><td>MFA fatigue via push flooding</td><td style="color:#d29922">High 7.5</td><td>T1621</td><td>Number matching + rate limit</td>
+    </tr>
+    <tr>
+      <td>3</td><td>SMS OTP hijacking via SIM-swap</td><td style="color:#d29922">High 7.1</td><td>T1111</td><td>Remove SMS, deploy TOTP/FIDO2</td>
+    </tr>
+  </table>
+
+  <h2>Skills demonstrated</h2>
+  <div class="skills">
+    <span class="skill-tag">Adversary-in-the-middle simulation</span>
+    <span class="skill-tag">MFA protocol analysis</span>
+    <span class="skill-tag">Keycloak / Authentik configuration</span>
+    <span class="skill-tag">FIDO2 / WebAuthn deployment</span>
+    <span class="skill-tag">Python security scripting</span>
+    <span class="skill-tag">Docker lab environments</span>
+    <span class="skill-tag">Pentest report writing</span>
+    <span class="skill-tag">CVSS scoring</span>
+    <span class="skill-tag">NIST SP 800-63B</span>
+    <span class="skill-tag">MITRE ATT&CK mapping</span>
+    <span class="skill-tag">Wireshark traffic analysis</span>
+    <span class="skill-tag">VoIP / SIP configuration</span>
+  </div>
+
+  <h2>View the project</h2>
+  <a class="btn" href="https://github.com/aryankaushik23-sys/mfa-bypass-lab" target="_blank">View on GitHub</a>
+  <a class="btn btn-outline" href="report/findings-summary.md" target="_blank">Read findings report</a>
+
+</main>
+
+<footer>
+  MFA Bypass Research Lab — built for cybersecurity portfolio and CV purposes. All testing performed in a controlled local environment.
+</footer>
+
+</body>
+</html>
